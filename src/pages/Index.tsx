@@ -67,7 +67,7 @@ const Index = () => {
             <div className="flex items-center gap-3">
               <div className="text-4xl">🎴</div>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">CardVault</h1>
+                <h1 className="text-2xl font-bold text-foreground">NSFWCLUB</h1>
                 <p className="text-sm text-muted-foreground">Платформа коллекционера</p>
               </div>
             </div>
