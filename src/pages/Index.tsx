@@ -16,21 +16,22 @@ interface CardItem {
   image: string;
   owned: boolean;
   category: string;
+  wishlisted: boolean;
 }
 
 const mockCards: CardItem[] = [
-  { id: 1, name: 'Огненный дракон', rarity: 'legendary', value: 15000, image: '🐉', owned: true, category: 'Мифические существа' },
-  { id: 2, name: 'Ледяной маг', rarity: 'epic', value: 7500, image: '🧙‍♂️', owned: true, category: 'Маги' },
-  { id: 3, name: 'Эльфийский лучник', rarity: 'rare', value: 3200, image: '🏹', owned: false, category: 'Воины' },
-  { id: 4, name: 'Гоблин-разведчик', rarity: 'common', value: 850, image: '👺', owned: true, category: 'Существа' },
-  { id: 5, name: 'Феникс', rarity: 'legendary', value: 18000, image: '🔥', owned: false, category: 'Мифические существа' },
-  { id: 6, name: 'Небесный рыцарь', rarity: 'epic', value: 6800, image: '⚔️', owned: true, category: 'Воины' },
-  { id: 7, name: 'Лесной страж', rarity: 'rare', value: 4100, image: '🌲', owned: false, category: 'Защитники' },
-  { id: 8, name: 'Горный тролль', rarity: 'common', value: 920, image: '👹', owned: true, category: 'Существа' },
-  { id: 9, name: 'Древний артефакт', rarity: 'legendary', value: 22000, image: '💎', owned: false, category: 'Артефакты' },
-  { id: 10, name: 'Морской страж', rarity: 'rare', value: 3850, image: '🌊', owned: true, category: 'Защитники' },
-  { id: 11, name: 'Гномий кузнец', rarity: 'common', value: 780, image: '⚒️', owned: false, category: 'Ремесленники' },
-  { id: 12, name: 'Темный некромант', rarity: 'epic', value: 8200, image: '💀', owned: false, category: 'Маги' },
+  { id: 1, name: 'Огненный дракон', rarity: 'legendary', value: 15000, image: '🐉', owned: true, category: 'Мифические существа', wishlisted: false },
+  { id: 2, name: 'Ледяной маг', rarity: 'epic', value: 7500, image: '🧙‍♂️', owned: true, category: 'Маги', wishlisted: false },
+  { id: 3, name: 'Эльфийский лучник', rarity: 'rare', value: 3200, image: '🏹', owned: false, category: 'Воины', wishlisted: true },
+  { id: 4, name: 'Гоблин-разведчик', rarity: 'common', value: 850, image: '👺', owned: true, category: 'Существа', wishlisted: false },
+  { id: 5, name: 'Феникс', rarity: 'legendary', value: 18000, image: '🔥', owned: false, category: 'Мифические существа', wishlisted: true },
+  { id: 6, name: 'Небесный рыцарь', rarity: 'epic', value: 6800, image: '⚔️', owned: true, category: 'Воины', wishlisted: false },
+  { id: 7, name: 'Лесной страж', rarity: 'rare', value: 4100, image: '🌲', owned: false, category: 'Защитники', wishlisted: false },
+  { id: 8, name: 'Горный тролль', rarity: 'common', value: 920, image: '👹', owned: true, category: 'Существа', wishlisted: false },
+  { id: 9, name: 'Древний артефакт', rarity: 'legendary', value: 22000, image: '💎', owned: false, category: 'Артефакты', wishlisted: true },
+  { id: 10, name: 'Морской страж', rarity: 'rare', value: 3850, image: '🌊', owned: true, category: 'Защитники', wishlisted: false },
+  { id: 11, name: 'Гномий кузнец', rarity: 'common', value: 780, image: '⚒️', owned: false, category: 'Ремесленники', wishlisted: false },
+  { id: 12, name: 'Темный некромант', rarity: 'epic', value: 8200, image: '💀', owned: false, category: 'Маги', wishlisted: true },
 ];
 
 const rarityConfig = {
@@ -43,20 +44,28 @@ const rarityConfig = {
 const Index = () => {
   const [selectedRarity, setSelectedRarity] = useState<Rarity | 'all'>('all');
   const [activeTab, setActiveTab] = useState('catalog');
+  const [cards, setCards] = useState<CardItem[]>(mockCards);
+
+  const toggleWishlist = (cardId: number) => {
+    setCards(cards.map(card => 
+      card.id === cardId ? { ...card, wishlisted: !card.wishlisted } : card
+    ));
+  };
 
   const filteredCards = selectedRarity === 'all' 
-    ? mockCards 
-    : mockCards.filter(card => card.rarity === selectedRarity);
+    ? cards 
+    : cards.filter(card => card.rarity === selectedRarity);
 
-  const ownedCards = mockCards.filter(card => card.owned);
+  const ownedCards = cards.filter(card => card.owned);
+  const wishlistedCards = cards.filter(card => card.wishlisted && !card.owned);
   const totalValue = ownedCards.reduce((sum, card) => sum + card.value, 0);
-  const collectionProgress = (ownedCards.length / mockCards.length) * 100;
+  const collectionProgress = (ownedCards.length / cards.length) * 100;
 
   const rarityStats = {
-    common: mockCards.filter(c => c.rarity === 'common' && c.owned).length,
-    rare: mockCards.filter(c => c.rarity === 'rare' && c.owned).length,
-    epic: mockCards.filter(c => c.rarity === 'epic' && c.owned).length,
-    legendary: mockCards.filter(c => c.rarity === 'legendary' && c.owned).length,
+    common: cards.filter(c => c.rarity === 'common' && c.owned).length,
+    rare: cards.filter(c => c.rarity === 'rare' && c.owned).length,
+    epic: cards.filter(c => c.rarity === 'epic' && c.owned).length,
+    legendary: cards.filter(c => c.rarity === 'legendary' && c.owned).length,
   };
 
   return (
@@ -87,7 +96,7 @@ const Index = () => {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 mb-8">
+          <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-4 mb-8">
             <TabsTrigger value="catalog" className="gap-2">
               <Icon name="Library" size={16} />
               Каталог
@@ -95,6 +104,15 @@ const Index = () => {
             <TabsTrigger value="collection" className="gap-2">
               <Icon name="Sparkles" size={16} />
               Коллекция
+            </TabsTrigger>
+            <TabsTrigger value="wishlist" className="gap-2">
+              <Icon name="Heart" size={16} />
+              Желаемые
+              {wishlistedCards.length > 0 && (
+                <Badge variant="secondary" className="ml-1 bg-accent text-white">
+                  {wishlistedCards.length}
+                </Badge>
+              )}
             </TabsTrigger>
             <TabsTrigger value="stats" className="gap-2">
               <Icon name="BarChart3" size={16} />
@@ -150,10 +168,111 @@ const Index = () => {
                       <span className="text-white/90 text-sm">Стоимость</span>
                       <span className="text-white font-bold">{card.value.toLocaleString()} ₽</span>
                     </div>
+                    {!card.owned && (
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="w-full mt-3 bg-white/20 hover:bg-white/30 text-white border-0"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleWishlist(card.id);
+                        }}
+                      >
+                        <Icon name={card.wishlisted ? "Heart" : "HeartOff"} size={16} className="mr-2" />
+                        {card.wishlisted ? 'В желаемых' : 'Хочу получить'}
+                      </Button>
+                    )}
                   </CardContent>
                 </Card>
               ))}
             </div>
+          </TabsContent>
+
+          <TabsContent value="wishlist" className="animate-fade-in">
+            {wishlistedCards.length === 0 ? (
+              <Card className="text-center py-12">
+                <CardContent>
+                  <div className="text-6xl mb-4">💭</div>
+                  <h3 className="text-xl font-semibold mb-2">Список желаний пуст</h3>
+                  <p className="text-muted-foreground">Добавьте карты из каталога, чтобы отслеживать, какие карты вы хотите получить для обмена</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <>
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Icon name="Heart" size={24} className="text-accent" />
+                      Список желаемых карт для обмена
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-accent">{wishlistedCards.length}</p>
+                        <p className="text-sm text-muted-foreground">Желаемых карт</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-primary">{wishlistedCards.reduce((sum, c) => sum + c.value, 0).toLocaleString()} ₽</p>
+                        <p className="text-sm text-muted-foreground">Общая стоимость</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-rarity-legendary">{wishlistedCards.filter(c => c.rarity === 'legendary').length}</p>
+                        <p className="text-sm text-muted-foreground">Легендарных</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-rarity-epic">{wishlistedCards.filter(c => c.rarity === 'epic').length}</p>
+                        <p className="text-sm text-muted-foreground">Эпических</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {wishlistedCards.map((card) => (
+                    <Card 
+                      key={card.id} 
+                      className={`${rarityConfig[card.rarity].gradient} border-0 overflow-hidden group hover:scale-105 transition-all duration-300 relative`}
+                    >
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-2 right-2 z-10 bg-black/30 hover:bg-black/50 text-white"
+                        onClick={() => toggleWishlist(card.id)}
+                      >
+                        <Icon name="X" size={18} />
+                      </Button>
+                      <CardHeader className="pb-3">
+                        <Badge variant="secondary" className="bg-black/30 text-white border-0 w-fit">
+                          {rarityConfig[card.rarity].label}
+                        </Badge>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-center mb-3">
+                          <div className="text-6xl mb-3 transform group-hover:scale-110 transition-transform duration-300">
+                            {card.image}
+                          </div>
+                          <CardTitle className="text-white text-lg mb-1">{card.name}</CardTitle>
+                          <p className="text-white/80 text-sm">{card.category}</p>
+                        </div>
+                        <div className="flex justify-between items-center mt-4 pt-3 border-t border-white/20">
+                          <span className="text-white/90 text-sm">Стоимость</span>
+                          <span className="text-white font-bold">{card.value.toLocaleString()} ₽</span>
+                        </div>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          className="w-full mt-3 bg-white/90 hover:bg-white text-black border-0 font-semibold"
+                        >
+                          <Icon name="ArrowLeftRight" size={16} className="mr-2" />
+                          Предложить обмен
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </>
+            )}
           </TabsContent>
 
           <TabsContent value="collection" className="animate-fade-in">
